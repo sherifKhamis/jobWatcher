@@ -43,7 +43,8 @@ def scrape_jobs():
         )
         driver.execute_script("arguments[0].click();", cookie_button)
     except Exception as e:
-        print("Kein Cookie-Button gefunden oder Fehler beim Klicken:", e)
+        jobs = []
+        return jobs
 
     # Iteriere über alle Kombinationen von Abteilungen und Karrierestatus
     for department in departments:
@@ -60,32 +61,32 @@ def scrape_jobs():
                 department_dropdown = Select(driver.find_element(By.ID, "optionsFacetsDD_department"))
                 department_dropdown.select_by_visible_text(department)
             except Exception as e:
-                print(f"Fehler beim Auswählen der Abteilung '{department}':", e)
-                continue
+                jobs = []
+                return jobs
 
             # Wähle im Dropdown für Karrierestatus den aktuellen Filterwert aus
             try:
                 career_dropdown = Select(driver.find_element(By.ID, "optionsFacetsDD_customfield3"))
                 career_dropdown.select_by_visible_text(status)
             except Exception as e:
-                print(f"Fehler beim Auswählen des Karrierestatus '{status}':", e)
-                continue
+                jobs = []
+                return jobs
 
             # Wähle im Dropdown für Land/Region den Filterwert "Deutschland" aus
             try:
                 country_dropdown = Select(driver.find_element(By.ID, "optionsFacetsDD_country"))
                 country_dropdown.select_by_visible_text(country)
             except Exception as e:
-                print(f"Fehler beim Auswählen des Landes '{country}':", e)
-                continue
+                jobs = []
+                return jobs
 
             # Klicke auf den "Suche starten"-Button, um die Filter anzuwenden
             try:
                 search_button = driver.find_element(By.XPATH, "//input[@type='submit' and @value='Suche starten']")
                 search_button.click()
             except Exception as e:
-                print("Fehler beim Klicken des Such-Buttons:", e)
-                continue
+                jobs = []
+                return jobs
 
             time.sleep(2)  # Kurze zusätzliche Wartezeit, falls nötig
 
@@ -114,8 +115,8 @@ def scrape_jobs():
                         "link": link
                     })
                 except Exception as e:
-                    print("Fehler beim Verarbeiten eines Job-Eintrags:", e)
-                    continue
+                    jobs = []
+                    return jobs
 
     # Schließe den WebDriver
     driver.quit()
